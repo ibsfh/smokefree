@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SmokeFree">
+<meta name="theme-color" content="#07090f">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>SmokeFree</title>
+<style>
+/* ── Reset & Tokens ─────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+:root {
+  --bg:            #07090f;
+  --card:          rgba(255,255,255,0.044);
+  --card-hi:       rgba(255,255,255,0.076);
+  --border:        rgba(255,255,255,0.07);
+  --border-hi:     rgba(255,255,255,0.14);
+
+  --text:          #eef2ff;
+  --text-2:        #8892a4;
+  --text-3:        #3f4f66;
+
+  --green:         #10b981;
+  --green-dim:     rgba(16,185,129,0.11);
+  --green-glow:    rgba(16,185,129,0.22);
+  --green-border:  rgba(16,185,129,0.26);
+
+  --amber:         #f59e0b;
+  --amber-dim:     rgba(245,158,11,0.11);
+  --amber-border:  rgba(245,158,11,0.28);
+
+  --rose:          #f43f5e;
+  --rose-dim:      rgba(244,63,94,0.11);
+  --rose-glow:     rgba(244,63,94,0.28);
+  --rose-border:   rgba(244,63,94,0.3);
+
+  --brand:         #f97316;
+  --brand-hi:      #fb923c;
+
+  --r-card:        22px;
+  --r-btn:         18px;
+  --r-pill:        99px;
+
+  --ease:          cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out:      cubic-bezier(0, 0, 0.2, 1);
+
+  --safe-top:    env(safe-area-inset-top);
+  --safe-bottom: env(safe-area-inset-bottom);
+}
+
+html {
+  height: 100%;
+  background: var(--bg);
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100dvh;
+  background:
+    radial-gradient(ellipse 70% 40% at 0% 0%,   rgba(249,115,22,0.07) 0%, transparent 100%),
+    radial-gradient(ellipse 55% 35% at 100% 95%, rgba(16,185,129,0.06) 0%, transparent 100%),
+    var(--bg);
+  color: var(--text);
+  font-family: 'Raleway', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: hidden;
+  padding-top: var(--safe-top);
+}
+
+/* ── Header ─────────────────────────────────────────── */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 13px;
+  background: rgba(7,9,15,0.82);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  background: linear-gradient(130deg, var(--brand) 0%, var(--brand-hi) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-hi);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  color: var(--text-2);
+  transition: background 0.15s, color 0.15s, transform 0.1s var(--ease-out);
+  /* Extend tap area beyond visual bounds for 44pt minimum */
+  padding: 0;
+  position: relative;
+}
+.icon-btn::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+}
+.icon-btn:active {
+  background: var(--border-hi);
+  color: var(--text);
+  transform: scale(0.92);
+}
+
+/* ── Scroll container ─────────────────────────────── */
+.scroll {
+  overflow-y: auto;
+  height: calc(100dvh - 62px);
+  padding: 16px 16px calc(52px + var(--safe-bottom));
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Glass card base ─────────────────────────────── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+/* ── Timer hero ─────────────────────────────────────── */
+.timer-card {
+  padding: 28px 24px 24px;
+  text-align: center;
+  position: relative;
+}
+
+.timer-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(ellipse 75% 55% at 50% -10%, rgba(249,115,22,0.07) 0%, transparent 80%);
+  pointer-events: none;
+}
+
+/* Top edge highlight */
+.timer-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 16px; right: 16px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  pointer-events: none;
+}
+
+.timer-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 16px;
+}
+
+.timer-value {
+  font-size: 64px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -3px;
+  line-height: 1;
+  color: var(--text);
+  margin-bottom: 10px;
+  transition: color 0.5s var(--ease);
+}
+
+.timer-value.amber { color: var(--amber); }
+.timer-value.green { color: var(--green); }
+
+.timer-sub {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+/* ── Today ───────────────────────────────────────────── */
+.today-card { padding: 18px 20px; }
+
+.today-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 6px;
+}
+
+.today-number {
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -2px;
+  color: var(--text);
+}
+
+.today-unit {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-2);
+  margin-left: 3px;
+  letter-spacing: 0;
+}
+
+.goal-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 13px;
+  border-radius: var(--r-pill);
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 6px;
+  background: var(--green-dim);
+  color: var(--green);
+  border: 1px solid var(--green-border);
+  transition: all 0.3s var(--ease);
+}
+
+.goal-pill.amber {
+  background: var(--amber-dim);
+  color: var(--amber);
+  border-color: var(--amber-border);
+}
+
+.goal-pill.rose {
+  background: var(--rose-dim);
+  color: var(--rose);
+  border-color: var(--rose-border);
+}
+
+.progress-track {
+  height: 5px;
+  background: rgba(255,255,255,0.06);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: var(--r-pill);
+  background: var(--green);
+  transition: width 0.55s var(--ease), background 0.4s;
+  max-width: 100%;
+}
+
+.progress-fill.amber { background: var(--amber); }
+.progress-fill.rose  { background: var(--rose); }
+
+/* ── Motivation ──────────────────────────────────────── */
+.motivation {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 13px 16px;
+  background: var(--green-dim);
+  border: 1px solid var(--green-border);
+  border-radius: 16px;
+  margin-bottom: 10px;
+}
+
+.motivation-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.motivation-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6ee7b7;
+  line-height: 1.5;
+}
+
+/* ── Buttons ────────────────────────────────────────── */
+.smoke-btn {
+  width: 100%;
+  background: linear-gradient(155deg, #be1c3a 0%, #e11d48 55%, #f43f5e 100%);
+  border: none;
+  border-radius: var(--r-btn);
+  height: 68px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  margin-bottom: 9px;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(244,63,94,0.3),
+    0 10px 36px var(--rose-glow),
+    0 2px 6px rgba(0,0,0,0.45);
+  transition: transform 0.12s var(--ease-out), box-shadow 0.12s var(--ease-out);
+}
+
+/* Top sheen */
+.smoke-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.13) 0%, transparent 55%);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.smoke-btn:active {
+  transform: scale(0.965);
+  box-shadow:
+    0 0 0 1px rgba(244,63,94,0.2),
+    0 4px 16px rgba(244,63,94,0.18),
+    0 1px 3px rgba(0,0,0,0.3);
+}
+
+.smoke-icon {
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.undo-btn {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  height: 48px;
+  padding: 0 20px;
+  color: var(--text-2);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.15s, color 0.15s, transform 0.1s var(--ease-out);
+}
+
+.undo-btn:active {
+  background: var(--card-hi);
+  color: var(--text);
+  transform: scale(0.97);
+}
+
+/* ── Stats grid ─────────────────────────────────────── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.stat-card {
+  padding: 17px 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 10px;
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  line-height: 1;
+}
+
+.stat-unit {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-2);
+  margin-top: 5px;
+}
+
+/* Money saved — featured */
+.stat-card.money {
+  background: var(--green-dim);
+  border-color: var(--green-border);
+}
+
+.stat-card.money::before {
+  content: '';
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  width: 70px;
+  height: 70px;
+  background: radial-gradient(circle, var(--green-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.stat-card.money .stat-eyebrow { color: rgba(16,185,129,0.55); }
+.stat-card.money .stat-value   { color: var(--green); font-size: 22px; }
+.stat-card.money .stat-unit    { color: rgba(16,185,129,0.55); }
+
+/* Streak — brand accent */
+.stat-card.streak {
+  background: linear-gradient(135deg, rgba(249,115,22,0.09) 0%, rgba(251,146,60,0.04) 100%);
+  border-color: rgba(249,115,22,0.22);
+}
+
+.stat-card.streak .stat-value { color: var(--brand); }
+
+/* ── Chart ──────────────────────────────────────────── */
+.chart-card { padding: 20px 20px 18px; }
+
+.chart-grid {
+  position: relative;
+  height: 90px;
+  margin-bottom: 10px;
+}
+
+/* Subtle grid lines */
+.chart-grid::before,
+.chart-grid::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: rgba(255,255,255,0.04);
+  pointer-events: none;
+}
+.chart-grid::before { top: 0; }
+.chart-grid::after  { top: 50%; }
+
+.chart-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.chart-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  gap: 4px;
+}
+
+.chart-num {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-3);
+}
+
+.chart-bar {
+  width: 100%;
+  border-radius: 5px 5px 1px 1px;
+  background: rgba(255,255,255,0.06);
+  min-height: 2px;
+}
+
+.chart-bar.good  { background: var(--green);  opacity: 0.8; }
+.chart-bar.amber { background: var(--amber);  opacity: 0.8; }
+.chart-bar.rose  { background: var(--rose);   opacity: 0.8; }
+.chart-bar.today { opacity: 1; box-shadow: 0 0 8px rgba(16,185,129,0.3); }
+.chart-bar.today.amber { box-shadow: 0 0 8px rgba(245,158,11,0.3); }
+.chart-bar.today.rose  { box-shadow: 0 0 8px rgba(244,63,94,0.3); }
+
+.chart-day-row {
+  display: flex;
+  gap: 7px;
+}
+
+.chart-day {
+  flex: 1;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-3);
+}
+
+.chart-day.is-today { color: var(--text-2); font-weight: 700; }
+
+/* ── Today log ──────────────────────────────────────── */
+.log-card { padding: 20px; }
+
+.log-empty {
+  text-align: center;
+  padding: 18px 0 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-3);
+}
+
+.log-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.log-item:first-child { padding-top: 0; }
+.log-item:last-child  { border-bottom: none; padding-bottom: 0; }
+
+.log-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--rose);
+  flex-shrink: 0;
+  opacity: 0.65;
+}
+
+.log-time {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.log-gap {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  background: rgba(255,255,255,0.05);
+  padding: 3px 9px;
+  border-radius: var(--r-pill);
+}
+
+/* ── Settings sheet ──────────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  z-index: 40;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.overlay.open { opacity: 1; pointer-events: all; }
+
+.sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  background: #0b1122;
+  border: 1px solid var(--border-hi);
+  border-bottom: none;
+  border-radius: 26px 26px 0 0;
+  z-index: 50;
+  transform: translateY(110%);
+  transition: transform 0.38s var(--ease);
+  padding: 0 22px calc(30px + var(--safe-bottom));
+}
+
+.sheet.open { transform: translateY(0); }
+
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: rgba(255,255,255,0.14);
+  border-radius: var(--r-pill);
+  margin: 12px auto 26px;
+}
+
+.sheet h2 {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  margin-bottom: 24px;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  gap: 16px;
+}
+
+.setting-row:last-of-type { border-bottom: none; }
+
+.setting-name { font-size: 15px; font-weight: 600; }
+.setting-sub  { font-size: 12px; color: var(--text-2); margin-top: 3px; font-weight: 500; }
+
+.s-input {
+  background: var(--card-hi);
+  border: 1px solid var(--border-hi);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  width: 80px;
+  text-align: center;
+  padding: 10px 4px;
+  outline: none;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  transition: border-color 0.15s;
+}
+
+.s-input:focus { border-color: var(--brand); }
+
+.danger-btn {
+  width: 100%;
+  background: var(--rose-dim);
+  border: 1px solid var(--rose-border);
+  border-radius: 16px;
+  padding: 16px;
+  color: var(--rose);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 22px;
+  transition: background 0.15s, transform 0.1s var(--ease-out);
+}
+
+.danger-btn:active { background: rgba(244,63,94,0.2); transform: scale(0.98); }
+
+/* ── Toast ──────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: calc(26px + var(--safe-bottom));
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: rgba(11,17,34,0.96);
+  border: 1px solid var(--border-hi);
+  border-radius: 14px;
+  padding: 11px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  z-index: 100;
+  opacity: 0;
+  white-space: nowrap;
+  pointer-events: none;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: opacity 0.2s, transform 0.2s var(--ease);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Header ──────────────────────────────────────── -->
+<header class="header">
+  <div class="logo">SmokeFree</div>
+  <button class="icon-btn" onclick="openSettings()" aria-label="Open settings">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
+  </button>
+</header>
+
+<!-- ── Main scroll ─────────────────────────────────── -->
+<main class="scroll">
+
+  <!-- Timer hero -->
+  <div class="card timer-card">
+    <p class="timer-eyebrow">Time since last cigarette</p>
+    <div class="timer-value" id="timerValue">—</div>
+    <p class="timer-sub" id="timerSub">Tap below to start tracking</p>
+  </div>
+
+  <!-- Today count + progress -->
+  <div class="card today-card">
+    <div class="today-top">
+      <div>
+        <p class="eyebrow">Today</p>
+        <div>
+          <span class="today-number" id="todayNum">0</span><span class="today-unit" id="todayUnit"> cigarettes</span>
+        </div>
+      </div>
+      <div class="goal-pill" id="goalPill">Goal: 10</div>
+    </div>
+    <div class="progress-track" role="progressbar" aria-label="Daily goal progress"
+         aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="progressBar">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Motivation -->
+  <div class="motivation" role="note">
+    <div class="motivation-dot" aria-hidden="true"></div>
+    <p class="motivation-text" id="motivationText">Every cigarette you skip is a win. You've got this.</p>
+  </div>
+
+  <!-- Log button -->
+  <button class="smoke-btn" onclick="logSmoke()" aria-label="Log a cigarette">
+    <span class="smoke-icon" aria-hidden="true">🚬</span>
+    I Just Smoked
+  </button>
+
+  <!-- Undo -->
+  <button class="undo-btn" onclick="undoLast()" aria-label="Undo last cigarette entry">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
+    </svg>
+    Undo last entry
+  </button>
+
+  <!-- Stats grid -->
+  <div class="stats-grid" role="region" aria-label="Statistics">
+
+    <!-- Money saved — hero stat -->
+    <div class="card stat-card money">
+      <p class="stat-eyebrow">Money Saved</p>
+      <div class="stat-value" id="statMoney">MVR 0</div>
+      <p class="stat-unit">vs daily baseline</p>
+    </div>
+
+    <!-- Streak -->
+    <div class="card stat-card streak">
+      <p class="stat-eyebrow">Best Streak</p>
+      <div class="stat-value" id="statStreak">0</div>
+      <p class="stat-unit">days under goal</p>
+    </div>
+
+    <!-- This week -->
+    <div class="card stat-card">
+      <p class="stat-eyebrow">This Week</p>
+      <div class="stat-value" id="statWeek">0</div>
+      <p class="stat-unit">cigarettes</p>
+    </div>
+
+    <!-- Remaining today -->
+    <div class="card stat-card">
+      <p class="stat-eyebrow">Remaining</p>
+      <div class="stat-value" id="statRemain">—</div>
+      <p class="stat-unit">until daily limit</p>
+    </div>
+
+  </div>
+
+  <!-- 7-day chart -->
+  <div class="card chart-card">
+    <p class="eyebrow">Last 7 Days</p>
+    <div class="chart-grid">
+      <div class="chart-bars" id="chartBars"
+           role="img" aria-label="Bar chart of cigarettes smoked over the last 7 days"></div>
+    </div>
+    <div class="chart-day-row" id="chartDays" aria-hidden="true"></div>
+  </div>
+
+  <!-- Today's log -->
+  <div class="card log-card">
+    <p class="eyebrow">Today's Log</p>
+    <div id="todayLog" role="list">
+      <p class="log-empty">No cigarettes today — keep it up!</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── Settings ──────────────────────────────────────── -->
+<div class="overlay" id="overlay" onclick="closeSettings()"></div>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Settings">
+  <div class="sheet-handle" role="presentation"></div>
+  <h2>Settings</h2>
+
+  <div class="setting-row">
+    <div>
+      <p class="setting-name">Daily Goal</p>
+      <p class="setting-sub">Max cigarettes per day</p>
+    </div>
+    <input class="s-input" type="number" id="goalInput"
+      min="1" max="60" value="10" inputmode="numeric"
+      aria-label="Daily goal in cigarettes" onchange="saveSettings()">
+  </div>
+
+  <div class="setting-row">
+    <div>
+      <p class="setting-name">Daily Baseline</p>
+      <p class="setting-sub">Before you started tracking</p>
+    </div>
+    <input class="s-input" type="number" id="baselineInput"
+      min="1" max="100" value="20" inputmode="numeric"
+      aria-label="Daily cigarettes before tracking" onchange="saveSettings()">
+  </div>
+
+  <div class="setting-row">
+    <div>
+      <p class="setting-name">Cost per Cigarette</p>
+      <p class="setting-sub">In MVR</p>
+    </div>
+    <input class="s-input" type="number" id="costInput"
+      min="0" max="100" step="0.5" value="2" inputmode="decimal"
+      aria-label="Cost per cigarette in MVR" onchange="saveSettings()">
+  </div>
+
+  <button class="danger-btn" onclick="confirmReset()">Reset All Data</button>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+// ── Storage ───────────────────────────────────────────────────
+const KEY = 'smokefree_v3';
+
+function load() {
+  try { return JSON.parse(localStorage.getItem(KEY)) || fresh(); }
+  catch { return fresh(); }
+}
+
+function fresh() {
+  return {
+    logs: [],
+    settings: { goal: 10, baseline: 20, costPerCig: 2 },
+    startDate: new Date().toISOString()
+  };
+}
+
+function persist() { localStorage.setItem(KEY, JSON.stringify(db)); }
+
+// ── Utilities ─────────────────────────────────────────────────
+function dayKey(date) {
+  return (date ? new Date(date) : new Date()).toLocaleDateString('en-CA');
+}
+
+function logsFor(key) { return db.logs.filter(l => dayKey(l.t) === key); }
+function todayLogs()  { return logsFor(dayKey()); }
+function pad(n)       { return String(n).padStart(2, '0'); }
+
+function fmtTime(ts) {
+  return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function fmtGap(ms) {
+  const m = Math.floor(ms / 60000);
+  return m < 60 ? `${m}m` : `${Math.floor(m / 60)}h ${pad(m % 60)}m`;
+}
+
+function fmtDiff(ms) {
+  const s = Math.floor(ms / 1000);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sc = s % 60;
+  if (h > 0) return `${h}h ${pad(m)}m`;
+  if (m > 0) return `${pad(m)}m ${pad(sc)}s`;
+  return `${sc}s`;
+}
+
+function fmtMVR(n) {
+  if (n <= 0) return 'MVR 0';
+  return n >= 100
+    ? `MVR ${Math.round(n)}`
+    : `MVR ${n.toFixed(n < 10 ? 2 : 1)}`;
+}
+
+// ── State ─────────────────────────────────────────────────────
+let db = load();
+
+// ── Actions ───────────────────────────────────────────────────
+function logSmoke() {
+  db.logs.push({ id: Date.now(), t: new Date().toISOString() });
+  persist();
+  render();
+  showToast('Logged');
+  if (navigator.vibrate) navigator.vibrate(30);
+}
+
+function undoLast() {
+  if (!db.logs.length) { showToast('Nothing to undo'); return; }
+  db.logs.pop();
+  persist();
+  render();
+  showToast('Entry removed');
+}
+
+function saveSettings() {
+  const g = parseInt(document.getElementById('goalInput').value);
+  const b = parseInt(document.getElementById('baselineInput').value);
+  const c = parseFloat(document.getElementById('costInput').value);
+  db.settings.goal       = isNaN(g) || g < 1 ? 10 : g;
+  db.settings.baseline   = isNaN(b) || b < 1 ? 20 : b;
+  db.settings.costPerCig = isNaN(c) || c < 0 ? 2 : c;
+  persist();
+  render();
+}
+
+function confirmReset() {
+  if (confirm('Delete all tracking data? This cannot be undone.')) {
+    db = fresh();
+    persist();
+    render();
+    closeSettings();
+    showToast('Data reset');
+  }
+}
+
+// ── Timer ─────────────────────────────────────────────────────
+function updateTimer() {
+  const el  = document.getElementById('timerValue');
+  const sub = document.getElementById('timerSub');
+  if (!db.logs.length) {
+    el.textContent = '—';
+    el.className   = 'timer-value';
+    sub.textContent = 'Tap below to start tracking';
+    return;
+  }
+  const last = new Date(db.logs[db.logs.length - 1].t);
+  const diff = Date.now() - last.getTime();
+  const hrs  = diff / 3600000;
+  el.textContent = fmtDiff(diff);
+  sub.textContent = `Last smoked at ${fmtTime(last)}`;
+  el.className = 'timer-value' + (hrs >= 3 ? ' green' : hrs >= 1 ? ' amber' : '');
+}
+
+// ── Computed stats ────────────────────────────────────────────
+function calcMoneySaved() {
+  const { baseline, costPerCig } = db.settings;
+  const days   = calcDays();
+  const saved  = Math.max(baseline * days - db.logs.length, 0) * costPerCig;
+  return saved;
+}
+
+function calcStreak() {
+  const { goal } = db.settings;
+  let streak = 0;
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const n = logsFor(dayKey(d)).length;
+    if (i === 0 && n === 0) continue;
+    if (n > 0 && n <= goal) streak++;
+    else if (n > goal) break;
+  }
+  return streak;
+}
+
+function calcWeek() {
+  let t = 0;
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    t += logsFor(dayKey(d)).length;
+  }
+  return t;
+}
+
+function calcDays() {
+  return Math.floor((Date.now() - new Date(db.startDate).getTime()) / 86400000) + 1;
+}
+
+// ── Render ─────────────────────────────────────────────────────
+function render() {
+  const { goal } = db.settings;
+  const today = todayLogs();
+  const count = today.length;
+  const pct   = Math.min((count / goal) * 100, 100);
+
+  // Count
+  document.getElementById('todayNum').textContent  = count;
+  document.getElementById('todayUnit').textContent = count === 1 ? ' cigarette' : ' cigarettes';
+
+  // Goal pill
+  const pill = document.getElementById('goalPill');
+  if (count > goal) {
+    pill.textContent = `+${count - goal} over`;
+    pill.className = 'goal-pill rose';
+  } else if (pct >= 75) {
+    pill.textContent = `${goal - count} left`;
+    pill.className = 'goal-pill amber';
+  } else {
+    pill.textContent = `Goal: ${goal}`;
+    pill.className = 'goal-pill';
+  }
+
+  // Progress bar
+  const fill = document.getElementById('progressFill');
+  fill.style.width = pct + '%';
+  fill.className   = 'progress-fill' + (pct >= 100 ? ' rose' : pct >= 75 ? ' amber' : '');
+  document.getElementById('progressBar').setAttribute('aria-valuenow', Math.round(pct));
+
+  // Motivation
+  setMotivation(count, goal);
+
+  // Stats
+  document.getElementById('statMoney').textContent  = fmtMVR(calcMoneySaved());
+  document.getElementById('statStreak').textContent = calcStreak();
+  document.getElementById('statWeek').textContent   = calcWeek();
+  const remaining = goal - count;
+  document.getElementById('statRemain').textContent = remaining > 0 ? remaining : '✕';
+
+  // Chart + log
+  renderChart(goal);
+  renderLog(today);
+
+  // Sync settings inputs
+  document.getElementById('goalInput').value     = db.settings.goal;
+  document.getElementById('baselineInput').value = db.settings.baseline;
+  document.getElementById('costInput').value     = db.settings.costPerCig;
+}
+
+function setMotivation(count, goal) {
+  const el = document.getElementById('motivationText');
+  const p = {
+    zero:  [
+      'No cigarettes yet today — amazing start!',
+      'Clean slate. Keep it going as long as you can.',
+      'Every hour without one is a victory worth celebrating.'
+    ],
+    good:  [
+      `${goal - count} remaining before your limit. You're in control.`,
+      'Well under your limit — solid discipline.',
+      'Each one skipped is money saved and health regained.'
+    ],
+    close: [
+      `Only ${goal - count} left today. Pause before the next one.`,
+      'Getting close to the limit. Take a slow breath instead.'
+    ],
+    over:  [
+      'Over the goal today — tomorrow is a fresh start.',
+      'One tough day doesn\'t erase your progress. Keep going.',
+      'Every day you track is a day you\'re taking control.'
+    ]
+  };
+  let pool;
+  if      (count === 0)             pool = p.zero;
+  else if (count < goal * 0.7)      pool = p.good;
+  else if (count < goal)            pool = p.close;
+  else                              pool = p.over;
+  el.textContent = pool[Math.floor(Date.now() / 90000) % pool.length];
+}
+
+function renderChart(goal) {
+  const barsEl = document.getElementById('chartBars');
+  const daysEl = document.getElementById('chartDays');
+  const days   = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    days.push(d);
+  }
+  const counts = days.map(d => logsFor(dayKey(d)).length);
+  const max    = Math.max(...counts, goal, 1);
+  const names  = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  barsEl.innerHTML = '';
+  daysEl.innerHTML = '';
+
+  days.forEach((d, i) => {
+    const n       = counts[i];
+    const isToday = i === 6;
+    const cls     = n === 0 ? '' : n <= goal * 0.7 ? 'good' : n <= goal ? 'amber' : 'rose';
+    const h       = n === 0 ? 2 : Math.max(Math.round((n / max) * 86), 6);
+
+    const col = document.createElement('div');
+    col.className = 'chart-col';
+
+    const num = document.createElement('div');
+    num.className = 'chart-num';
+    if (n > 0) num.textContent = n;
+    col.appendChild(num);
+
+    const bar = document.createElement('div');
+    bar.className = `chart-bar ${cls}${isToday ? ' today' : ''}`.trim();
+    bar.style.height = h + 'px';
+    bar.setAttribute('aria-label', `${names[d.getDay()]}: ${n} cigarettes`);
+    col.appendChild(bar);
+    barsEl.appendChild(col);
+
+    const label = document.createElement('div');
+    label.className = 'chart-day' + (isToday ? ' is-today' : '');
+    label.textContent = isToday ? 'Today' : names[d.getDay()];
+    daysEl.appendChild(label);
+  });
+}
+
+function renderLog(logs) {
+  const el = document.getElementById('todayLog');
+  if (!logs.length) {
+    el.innerHTML = '<p class="log-empty" role="listitem">No cigarettes today — keep it up!</p>';
+    return;
+  }
+  const sorted = [...logs].sort((a, b) => b.id - a.id); // newest first
+  el.innerHTML = sorted.map((entry, i) => {
+    const older = sorted[i + 1];
+    const gap   = older
+      ? `<span class="log-gap">${fmtGap(entry.id - older.id)}</span>`
+      : '';
+    return `<div class="log-item" role="listitem">
+      <div class="log-dot" aria-hidden="true"></div>
+      <span class="log-time">${fmtTime(entry.t)}</span>
+      ${gap}
+    </div>`;
+  }).join('');
+}
+
+// ── Sheet ─────────────────────────────────────────────────────
+function openSettings() {
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('sheet').classList.add('open');
+}
+
+function closeSettings() {
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('sheet').classList.remove('open');
+}
+
+// ── Toast ─────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ── Boot ──────────────────────────────────────────────────────
+render();
+updateTimer();
+setInterval(updateTimer, 1000);
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
